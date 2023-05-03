@@ -4,7 +4,9 @@ import secp256k1
 from cffi import FFI
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
-from .ws import bech32  
+# from .ws import bech32
+from bech32 import *  
+
 
 
 
@@ -13,8 +15,8 @@ class PublicKey:
         self.raw_bytes = raw_bytes
 
     def bech32(self) -> str:
-        converted_bits = bech32.convertbits(self.raw_bytes, 8, 5)
-        return bech32.bech32_encode("npub", converted_bits, bech32.Encoding.BECH32)
+        converted_bits = convertbits(self.raw_bytes, 8, 5)
+        return bech32_encode("npub", converted_bits, Encoding.BECH32)
 
     def hex(self) -> str:
         return self.raw_bytes.hex()
@@ -36,13 +38,13 @@ class PrivateKey:
     @classmethod
     def from_nsec(cls, nsec: str):
         """ Load a PrivateKey from its bech32/nsec form """
-        hrp, data, spec = bech32.bech32_decode(nsec)
-        raw_secret = bech32.convertbits(data, 5, 8)[:-1]
+        hrp, data, spec = bech32_decode(nsec)
+        raw_secret = convertbits(data, 5, 8)[:-1]
         return cls(bytes(raw_secret))
 
     def bech32(self) -> str:
-        converted_bits = bech32.convertbits(self.raw_secret, 8, 5)
-        return bech32.bech32_encode("nsec", converted_bits, bech32.Encoding.BECH32)
+        converted_bits = convertbits(self.raw_secret, 8, 5)
+        return bech32_encode("nsec", converted_bits, Encoding.BECH32)
 
     def hex(self) -> str:
         return self.raw_secret.hex()
